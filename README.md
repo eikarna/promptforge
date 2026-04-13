@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PromptForge
 
-## Getting Started
+AI-powered prompt enrichment platform. Transform raw, low-fidelity prompts into expertly structured, god-tier outputs using professional prompt engineering frameworks.
 
-First, run the development server:
+## Stack
+
+- **Framework**: Next.js 16 (App Router) + TypeScript
+- **Styling**: Tailwind CSS v4 (Glassmorphism design system)
+- **Auth**: Auth.js v5 (username/password, JWT sessions)
+- **Database**: Prisma 7 + Turso (LibSQL)
+- **AI**: OpenRouter API (NVIDIA Nemotron, Claude, Gemini) — streaming SSE
+- **Icons**: Lucide React
+- **Animations**: Framer Motion + CSS keyframes
+
+## Features
+
+- **3 Enrichment Frameworks** — CO-STAR, RISEN, and Hybrid
+- **Streaming Output** — real-time LLM response with typewriter cursor
+- **Per-User API Keys** — encrypted storage, users bring their own OpenRouter key
+- **Prompt History** — search, filter, expand, copy, delete
+- **Preference Panel** — framework, tone, industry, model, temperature
+- **Glassmorphism UI** — animated gradient mesh, glass cards, glow effects, orbital spinner
+
+## Quick Start
+
+### 1. Install dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure environment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy `.env.local` and fill in your values:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Turso (from turso.tech dashboard)
+TURSO_DATABASE_URL="libsql://your-db.turso.io"
+TURSO_AUTH_TOKEN="your-auth-token"
 
-## Learn More
+# Auth secret (generate: openssl rand -base64 32)
+AUTH_SECRET="your-random-secret"
 
-To learn more about Next.js, take a look at the following resources:
+# OpenRouter (optional server fallback)
+OPENROUTER_API_KEY="sk-or-v1-..."
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# App URL
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. Push database schema
 
-## Deploy on Vercel
+```bash
+npx prisma db push
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 4. Run dev server
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+bun run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000)
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── page.tsx                    # Landing page
+│   ├── globals.css                 # Glassmorphism design system
+│   ├── layout.tsx                  # Root layout (fonts, providers, bg)
+│   ├── (auth)/
+│   │   ├── login/page.tsx
+│   │   └── register/page.tsx
+│   ├── dashboard/
+│   │   ├── layout.tsx              # Sidebar + shell
+│   │   ├── page.tsx                # Enrichment workspace
+│   │   ├── history/page.tsx
+│   │   └── settings/page.tsx
+│   └── api/
+│       ├── auth/[...nextauth]/     # Auth handler
+│       └── enrich/                 # Streaming enrichment API
+├── actions/                        # Server actions
+├── engine/
+│   ├── enricher.ts                 # Core orchestrator
+│   └── templates/                  # CO-STAR, RISEN, Hybrid
+├── providers/
+│   ├── openrouter.ts               # OpenRouter LLM provider
+│   └── registry.ts                 # Provider factory
+├── lib/
+│   ├── auth.ts                     # Auth.js config
+│   ├── prisma.ts                   # Prisma + LibSQL client
+│   └── utils.ts                    # Helpers
+├── types/                          # Shared TypeScript types
+└── proxy.ts                        # Route protection (Next.js 16)
+```
+
+## Enrichment Frameworks
+
+| Framework | Structure | Best For |
+|-----------|-----------|----------|
+| **CO-STAR** | Context · Objective · Style · Tone · Audience · Response | Content generation, writing tasks |
+| **RISEN** | Role · Instructions · Steps · End goal · Narrowing | Technical tasks, step-by-step processes |
+| **Hybrid** | Combined CO-STAR + RISEN | Complex, multi-faceted prompts |
+
+## Deploy to Vercel
+
+1. Push to GitHub
+2. Import project in Vercel
+3. Add environment variables in Vercel dashboard
+4. Deploy
+
+## License
+
+MIT
