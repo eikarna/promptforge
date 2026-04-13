@@ -19,7 +19,7 @@ export async function getPromptHistory(page = 1, pageSize = 20) {
   });
 
   return {
-    prompts: prompts.map((p) => ({
+    prompts: prompts.map((p: { createdAt: Date; [key: string]: unknown }) => ({
       ...p,
       createdAt: p.createdAt.toISOString(),
     })),
